@@ -1,0 +1,20 @@
+﻿services:
+  # Backend .NET 10
+  estudy-api:
+    image: estudy-api-v1
+    container_name: estudy-api
+    build:
+      context: .
+      dockerfile: src/backend/EStudy.Api/Dockerfile
+      args:
+        APP_UID: ${APP_UID:-1000}
+        APP_GID: ${APP_GID:-1000}
+    env_file:
+      - .env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Development}
+      - ASPNETCORE_URLS=http://+:8080
+    ports:
+      - "5000:8080"
+      - "5001:8081"
+    restart: always
