@@ -1,4 +1,23 @@
 ﻿services:
+  estudy-db:
+    image: postgres:17-alpine
+    container_name: estudy-db
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - estudy-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
   # Backend .NET 10
   estudy-api:
     image: estudy-api-v1
@@ -14,7 +33,21 @@
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Development}
       - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=${ConnectionStrings__DefaultConnection}
+      - BackendUrl=${BackendUrl}
+      - FrontendUrl=${FrontendUrl}
+      - Settings__Jwt__SigningKey=${Settings__Jwt__SigningKey}
+      - Settings__Jwt__Issuer=${Settings__Jwt__Issuer}
+      - Settings__Jwt__Audience=${Settings__Jwt__Audience}
+      - Settings__Jwt__ExpirationTimeMinutes=${Settings__Jwt__ExpirationTimeMinutes}
+      - Settings__IdCryptographyAlphabet=${Settings__IdCryptographyAlphabet}
+    depends_on:
+      estudy-db:
+        condition: service_healthy
     ports:
       - "5000:8080"
       - "5001:8081"
     restart: always
+
+volumes:
+  estudy-postgres-data:

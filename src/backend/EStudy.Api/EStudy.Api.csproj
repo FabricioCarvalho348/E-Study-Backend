@@ -1,14 +1,28 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    </PropertyGroup>
+      <UserSecretsId>a23a5f82-11ee-432a-b379-2301c95bb16d</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.3"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.3" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.4">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Scalar.AspNetCore" Version="2.13.6" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.5" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\EStudy.Application\EStudy.Application.csproj" />
+      <ProjectReference Include="..\EStudy.Communication\EStudy.Communication.csproj" />
+      <ProjectReference Include="..\EStudy.Exception\EStudy.Exception.csproj" />
+      <ProjectReference Include="..\EStudy.Infrastructure\EStudy.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>
