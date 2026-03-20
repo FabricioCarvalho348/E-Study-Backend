@@ -5,30 +5,16 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace EStudy.Infrastructure.Security.Tokens.Access.Validator;
 
-public class JwtTokenValidator : JwtTokenHandler, IAccessTokenValidator
+public class JwtTokenValidator(string signingKey) : JwtTokenHandler, IAccessTokenValidator
 {
-    private readonly string _signingKey;
-    private readonly string _issuer;
-    private readonly string _audience;
-    
-    public JwtTokenValidator(string signingKey, string issuer, string audience)
-    {
-        _signingKey = signingKey;
-        _issuer = issuer;
-        _audience = audience;
-    }
-    
 
     public Guid ValidateAndGetUserIdentifier(string token)
     {
         var validationParameter = new TokenValidationParameters
         {
-            ValidateIssuerSigningKey = true,
-            ValidateAudience = true,
-            ValidAudience = _audience,
-            ValidateIssuer = true,
-            ValidIssuer = _issuer,
-            IssuerSigningKey = SecurityKey(_signingKey),
+            ValidateAudience = false,
+            ValidateIssuer = false,
+            IssuerSigningKey = SecurityKey(signingKey),
             ClockSkew = new TimeSpan(0),
         };
         

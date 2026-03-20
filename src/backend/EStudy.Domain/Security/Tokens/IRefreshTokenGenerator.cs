@@ -2,5 +2,5 @@
 
 public interface IRefreshTokenGenerator
 {
-    
+    public string Generate();
 }

@@ -28,14 +28,13 @@ public static class BuilderExtension
     {
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddOpenApi();
+        builder.Services.AddSwaggerGen(options => { options.CustomSchemaIds(n => n.FullName); });
         builder.Services.AddSwaggerConfig();
     }
     
     public static void AddSecurity(this WebApplicationBuilder builder)
     {
         var signingKey = builder.Configuration.GetValue<string>("Settings:Jwt:SigningKey");
-        var issuer = builder.Configuration.GetValue<string>("Settings:Jwt:Issuer");
-        var audience = builder.Configuration.GetValue<string>("Settings:Jwt:Audience");
 
         if (string.IsNullOrWhiteSpace(signingKey))
             throw new InvalidOperationException("JWT signing key is not configured. Set Settings:Jwt:SigningKey in environment variables or user secrets.");
@@ -48,10 +47,9 @@ public static class BuilderExtension
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey)),
-                    ValidateIssuer = true,
-                    ValidIssuer = issuer,
-                    ValidateAudience = true,
-                    ValidAudience = audience,
+                    ValidateLifetime = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
                     ClockSkew = TimeSpan.Zero
                 };
             });
@@ -67,10 +65,6 @@ public static class BuilderExtension
             .Services
             .AddDbContext<EStudyDbContext>(
                 x => { x.UseNpgsql(Configuration.ConnectionString); });
-
-        builder.Services
-            .AddHealthChecks()
-            .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
     }
 
     public static void AddCrossOrigin(this WebApplicationBuilder builder)

@@ -14,7 +14,7 @@ namespace EStudy.Api.Controllers;
 
 public class UserController : EStudyBaseController
 {
-    [HttpPost()]
+    [HttpPost("register")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(ResponseRegisteredUserJson), StatusCodes.Status201Created)]
     public async Task<IActionResult> Register(
@@ -26,7 +26,7 @@ public class UserController : EStudyBaseController
         return Created(string.Empty, result);
     }
     
-    [HttpGet]
+    [HttpGet("user-profile")]
     [Authorize]
     [ProducesResponseType(typeof(ResponseUserProfileJson), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetUserProfile([FromServices] IGetUserProfileUseCase useCase)
@@ -36,7 +36,7 @@ public class UserController : EStudyBaseController
         return Ok(result);
     }
     
-    [HttpPut]
+    [HttpPut("update-profile")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ResponseErrorJson), StatusCodes.Status400BadRequest)]
@@ -62,7 +62,7 @@ public class UserController : EStudyBaseController
         return NoContent();
     }
     
-    [HttpDelete]
+    [HttpDelete("delete")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [Authorize]
     public async Task<IActionResult> Delete([FromServices] IRequestDeleteUserUseCase useCase)

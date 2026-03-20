@@ -3,13 +3,9 @@ using Sqids;
 
 namespace EStudy.Api.Binders;
 
-public class EStudyIdBinder : IModelBinder
+public class EStudyIdBinder(SqidsEncoder<long> idEncoder) : IModelBinder
 {
-private readonly SqidsEncoder<long> _idEncoder;
-
-public EStudyIdBinder(SqidsEncoder<long> idEncoder) => _idEncoder = idEncoder;
-
-public Task BindModelAsync(ModelBindingContext bindingContext)
+    public Task BindModelAsync(ModelBindingContext bindingContext)
 {
     var modelName = bindingContext.ModelName;
 
@@ -25,7 +21,7 @@ public Task BindModelAsync(ModelBindingContext bindingContext)
     if (string.IsNullOrWhiteSpace(value))
         return Task.CompletedTask;
 
-    var id = _idEncoder.Decode(value).Single();
+    var id = idEncoder.Decode(value).Single();
 
     bindingContext.Result = ModelBindingResult.Success(id);
 

@@ -7,12 +7,12 @@ public static class AppExtension
     public static WebApplication ConfigureDevEnvironment(
         this WebApplication app)
     {
-        app.MapOpenApi();
         app.MapScalarApiReference("/scalar", options =>
         {
             options
                 .WithOpenApiRoutePattern("/swagger/v1/swagger.json");
         });
+
         app.UseSwaggerSpecification();
         return app;
     }

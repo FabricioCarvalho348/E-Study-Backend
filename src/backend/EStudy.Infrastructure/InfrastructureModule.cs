@@ -1,5 +1,5 @@
-﻿using System.Reflection;
-using EStudy.Domain.Repositories;
+﻿using EStudy.Domain.Repositories;
+using EStudy.Domain.Repositories.Token;
 using EStudy.Domain.Repositories.User;
 using EStudy.Domain.Security.Cryptography;
 using EStudy.Domain.Security.Tokens;
@@ -15,13 +15,15 @@ using FluentMigrator.Runner;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
+using EStudy.Infrastructure.Security.Tokens.Refresh;
 
 namespace EStudy.Infrastructure;
 
 public static class InfrastructureModule
 { public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        AddPasswordEncrypter(services, configuration);
+        AddPasswordEncrypter(services);
         AddRepositories(services);
         AddLoggedUser(services);
         AddTokens(services, configuration);
@@ -47,6 +49,7 @@ public static class InfrastructureModule
     {
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ITokenRepository, TokenRepository>();
     }
 
     private static void AddFluentMigratorPostgres(IServiceCollection services, IConfiguration configuration)
@@ -66,19 +69,17 @@ public static class InfrastructureModule
     {
         var expirationTimeMinutes = configuration.GetValue<uint>("Settings:Jwt:ExpirationTimeMinutes");
         var signingKey = configuration.GetValue<string>("Settings:Jwt:SigningKey");
-        var issuer = configuration.GetValue<string>("Settings:Jwt:Issuer");
-        var audience = configuration.GetValue<string>("Settings:Jwt:Audience");
+
+        services.AddScoped<IAccessTokenGenerator>(option => new JwtTokenGenerator(expirationTimeMinutes, signingKey!));
+        services.AddScoped<IAccessTokenValidator>(option => new JwtTokenValidator(signingKey!));
         
-        services.AddScoped<IAccessTokenGenerator>(_ => new JwtTokenGenerator(expirationTimeMinutes, signingKey!, issuer!, audience!));
-        services.AddScoped<IAccessTokenValidator>(_ => new JwtTokenValidator(signingKey!, issuer!, audience!));
+        services.AddScoped<IRefreshTokenGenerator, RefreshTokenGenerator>();
     }
     
     private static void AddLoggedUser(IServiceCollection services) => services.AddScoped<ILoggedUser, LoggedUser>();
     
-    private static void AddPasswordEncrypter(IServiceCollection services, IConfiguration configuration)
+    private static void AddPasswordEncrypter(IServiceCollection services)
     {
-        var additionalKey = configuration.GetValue<string>("Settings:Password:AdditionalKey");
-        
-        services.AddScoped<IPasswordEncrypter>(_ => new Sha512Encrypter(additionalKey!));
+        services.AddScoped<IPasswordEncrypter, BCryptNet>();
     }
 }

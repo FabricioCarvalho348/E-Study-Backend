@@ -37,8 +37,6 @@
       - BackendUrl=${BackendUrl}
       - FrontendUrl=${FrontendUrl}
       - Settings__Jwt__SigningKey=${Settings__Jwt__SigningKey}
-      - Settings__Jwt__Issuer=${Settings__Jwt__Issuer}
-      - Settings__Jwt__Audience=${Settings__Jwt__Audience}
       - Settings__Jwt__ExpirationTimeMinutes=${Settings__Jwt__ExpirationTimeMinutes}
       - Settings__IdCryptographyAlphabet=${Settings__IdCryptographyAlphabet}
     depends_on:

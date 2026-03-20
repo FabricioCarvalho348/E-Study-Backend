@@ -1,13 +1,14 @@
-﻿using Microsoft.OpenApi;
+﻿using EStudy.Api.Filters;
+using Microsoft.OpenApi;
 
 namespace EStudy.Api.Common.Api;
 public static class SwaggerConfig
 {
     private static readonly string AppName = "E-Study API - .NET 10 and Docker";
     private static readonly string AppDescription = $"REST API RESTful developed - {AppName}";
+    private const string AuthenticationType = "Bearer";
 
-    public static IServiceCollection AddSwaggerConfig(
-        this IServiceCollection services)
+    public static IServiceCollection AddSwaggerConfig(this IServiceCollection services)
     {
         services.AddSwaggerGen(options =>
         {
@@ -16,20 +17,29 @@ public static class SwaggerConfig
                 Title = AppName,
                 Version = "v1",
                 Description = AppDescription,
-                Contact = new OpenApiContact
-                {
-                    Name = "Fabricio Carvalho",
-                    Email = "fabricio.dev3@gmail.com",
-                    
-                },
-                License = new OpenApiLicense
-                {
-                    Name = "MIT"
-                }
             });
 
-            options.CustomSchemaIds(type => type.FullName);
+            options.OperationFilter<IdsFilter>();
+
+            options.AddSecurityDefinition(AuthenticationType, new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Description = "Autenticação JWT. Digite APENAS o seu token JWT na caixa abaixo (sem a palavra 'Bearer').",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT"
+            });
+
+            options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecuritySchemeReference(AuthenticationType, document),
+                    []
+                }
+            });
         });
+
         return services;
     }
 

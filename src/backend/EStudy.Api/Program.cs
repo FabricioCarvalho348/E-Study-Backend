@@ -5,9 +5,11 @@ using EStudy.Api.Token;
 using EStudy.Application;
 using EStudy.Domain.Security.Tokens;
 using EStudy.Infrastructure;
+using EStudy.Infrastructure.DataAccess;
 using EStudy.Infrastructure.Extensions;
 using EStudy.Infrastructure.Migrations;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,9 +21,21 @@ builder.AddDocumentation();
 builder.Services.AddMvc(options => options.Filters.Add(typeof(ExceptionFilter)));
 ConfigureServices(builder);
 builder.Services.AddScoped<ITokenProvider, HttpContextTokenValue>();
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
+
+builder.Services.AddHealthChecks().AddDbContextCheck<EStudyDbContext>();
 
 var app = builder.Build();
 
+app.MapHealthChecks("/Health", new HealthCheckOptions
+{
+    AllowCachingResponses = false,
+    ResultStatusCodes =
+    {
+        [HealthStatus.Healthy] = StatusCodes.Status200OK,
+        [HealthStatus.Unhealthy] = StatusCodes.Status503ServiceUnavailable
+    }
+});
 
 app.UseHttpsRedirection();
 app.UseRouting();
@@ -30,11 +44,6 @@ app.UseSecurity();
 app.UseCors(ApiConfiguration.CorsPolicyName);
 
 app.MapControllers();
-app.MapHealthChecks("/health");
-app.MapHealthChecks("/health/live", new HealthCheckOptions
-{
-    Predicate = registration => registration.Tags.Contains("live")
-});
 
 if (builder.Configuration.IsTestEnvironment() == false)
 {

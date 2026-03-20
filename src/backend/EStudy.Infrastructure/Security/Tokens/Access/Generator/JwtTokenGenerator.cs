@@ -5,24 +5,11 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace EStudy.Infrastructure.Security.Tokens.Access.Generator;
 
-public class JwtTokenGenerator : JwtTokenHandler, IAccessTokenGenerator
+public class JwtTokenGenerator(uint expirationTimeMinutes, string signingKey) : JwtTokenHandler, IAccessTokenGenerator
 {
-    private readonly uint _expirationTimeMinutes;
-    private readonly string _signingKey;
-    private readonly string _issuer;
-    private readonly string _audience;
-
-    public JwtTokenGenerator(uint expirationTimeMinutes, string signingKey, string issuer, string audience)
-    {
-        _expirationTimeMinutes = expirationTimeMinutes;
-        _signingKey = signingKey;
-        _issuer = issuer;
-        _audience = audience;
-    }
-
     public string Generate(Guid userIdentifier)
     {
-        var claims = new List<Claim>
+        var claims = new List<Claim>()
         {
             new Claim(ClaimTypes.Sid, userIdentifier.ToString())
         };
@@ -30,11 +17,8 @@ public class JwtTokenGenerator : JwtTokenHandler, IAccessTokenGenerator
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddMinutes(_expirationTimeMinutes),
-            Issuer = _issuer,
-            Audience = _audience,
-            SigningCredentials = new SigningCredentials(SecurityKey(_signingKey),
-                SecurityAlgorithms.HmacSha256Signature)
+            Expires = DateTime.UtcNow.AddMinutes(expirationTimeMinutes),
+            SigningCredentials = new SigningCredentials(SecurityKey(signingKey), SecurityAlgorithms.HmacSha256Signature)
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();

@@ -1,6 +1,8 @@
-﻿namespace EStudy.Infrastructure.Security.Tokens.Refresh;
+﻿using EStudy.Domain.Security.Tokens;
 
-public class RefreshTokenGenerator
+namespace EStudy.Infrastructure.Security.Tokens.Refresh;
+
+public class RefreshTokenGenerator : IRefreshTokenGenerator
 {
-    
+    public string Generate() => Convert.ToBase64String(Guid.NewGuid().ToByteArray());
 }

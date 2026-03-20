@@ -12,8 +12,6 @@ Este projeto ja vem preparado para ler configuracoes via variaveis de ambiente n
 - `FrontendUrl`
 - `ASPNETCORE_ENVIRONMENT`
 - `Settings__Jwt__SigningKey`
-- `Settings__Jwt__Issuer`
-- `Settings__Jwt__Audience`
 - `Settings__Jwt__ExpirationTimeMinutes`
 - `Settings__IdCryptographyAlphabet`
 
@@ -27,8 +25,6 @@ Para segredo local (connection string), use User Secrets:
 dotnet user-secrets init --project .\src\backend\EStudy.Api\EStudy.Api.csproj
 dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=SEU_DB;Username=SEU_USER;Password=SUA_SENHA" --project .\src\backend\EStudy.Api\EStudy.Api.csproj
 dotnet user-secrets set "Settings:Jwt:SigningKey" "SUA_CHAVE_FORTE_MIN_32_CHARS" --project .\src\backend\EStudy.Api\EStudy.Api.csproj
-dotnet user-secrets set "Settings:Jwt:Issuer" "EStudy.Api" --project .\src\backend\EStudy.Api\EStudy.Api.csproj
-dotnet user-secrets set "Settings:Jwt:Audience" "EStudy.Client" --project .\src\backend\EStudy.Api\EStudy.Api.csproj
 dotnet user-secrets set "Settings:Jwt:ExpirationTimeMinutes" "60" --project .\src\backend\EStudy.Api\EStudy.Api.csproj
 dotnet user-secrets set "Settings:IdCryptographyAlphabet" "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" --project .\src\backend\EStudy.Api\EStudy.Api.csproj
 ```
@@ -41,8 +37,6 @@ $env:ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=SEU
 $env:BackendUrl="http://localhost:5016"
 $env:FrontendUrl="http://localhost:5173"
 $env:Settings__Jwt__SigningKey="SUA_CHAVE_FORTE_MIN_32_CHARS"
-$env:Settings__Jwt__Issuer="EStudy.Api"
-$env:Settings__Jwt__Audience="EStudy.Client"
 $env:Settings__Jwt__ExpirationTimeMinutes="60"
 $env:Settings__IdCryptographyAlphabet="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
@@ -72,3 +66,14 @@ docker compose up --build
 
 A API ficara exposta em `http://localhost:5000` (porta mapeada para `8080` no container).
 
+### Documentação dos Endpoints
+
+Documentação feita no Swagger
+```powershell
+http://localhost:5000/swagger-ui/index.html
+```
+
+- Documentação feita no Scalar
+```powershell
+http://localhost:5000/scalar/
+```
