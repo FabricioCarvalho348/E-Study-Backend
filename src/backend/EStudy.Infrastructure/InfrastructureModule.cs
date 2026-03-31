@@ -1,4 +1,5 @@
 ﻿using EStudy.Domain.Repositories;
+using EStudy.Domain.Repositories.Event;
 using EStudy.Domain.Repositories.Token;
 using EStudy.Domain.Repositories.User;
 using EStudy.Domain.Security.Cryptography;
@@ -16,6 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using EStudy.Domain.Repositories.UserTask;
 using EStudy.Infrastructure.Security.Tokens.Refresh;
 
 namespace EStudy.Infrastructure;
@@ -50,6 +52,8 @@ public static class InfrastructureModule
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITokenRepository, TokenRepository>();
+        services.AddScoped<IUserTaskRepository, UserTaskRepository>();
+        services.AddScoped<IEventRepository, EventRepository>();
     }
 
     private static void AddFluentMigratorPostgres(IServiceCollection services, IConfiguration configuration)

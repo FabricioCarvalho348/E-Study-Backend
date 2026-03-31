@@ -1,5 +1,11 @@
 ﻿using EStudy.Application.Services.AutoMapper;
 using EStudy.Application.UseCases.Login.DoLogin;
+using EStudy.Application.UseCases.Events.Create;
+using EStudy.Application.UseCases.Events.Delete;
+using EStudy.Application.UseCases.Events.GetAll;
+using EStudy.Application.UseCases.Events.GetById;
+using EStudy.Application.UseCases.Events.Patch;
+using EStudy.Application.UseCases.Events.Update;
 using EStudy.Application.UseCases.Token;
 using EStudy.Application.UseCases.User.ChangePassword;
 using EStudy.Application.UseCases.User.Delete.Delete;
@@ -7,6 +13,11 @@ using EStudy.Application.UseCases.User.Delete.Request;
 using EStudy.Application.UseCases.User.Profile;
 using EStudy.Application.UseCases.User.Register;
 using EStudy.Application.UseCases.User.Update;
+using EStudy.Application.UseCases.UserTasks.Create;
+using EStudy.Application.UseCases.UserTasks.Delete;
+using EStudy.Application.UseCases.UserTasks.GetAll;
+using EStudy.Application.UseCases.UserTasks.GetById;
+using EStudy.Application.UseCases.UserTasks.Update;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -57,5 +68,18 @@ public static class ApplicationModule
         services.AddScoped<IRequestDeleteUserUseCase, RequestDeleteUserUseCase>();
         services.AddScoped<IDeleteUserAccountUseCase, DeleteUserAccountUseCase>();
         services.AddScoped<IUseRefreshTokenUseCase, UseRefreshTokenUseCase>();
+
+        services.AddScoped<ICreateUserTaskUseCase, CreateUserTaskUseCase>();
+        services.AddScoped<IGetAllUserTasksUseCase, GetAllUserTasksUseCase>();
+        services.AddScoped<IGetUserTaskByIdUseCase, GetUserTaskByIdUseCase>();
+        services.AddScoped<IUpdateUserTaskUseCase, UpdateUserTaskUseCase>();
+        services.AddScoped<IDeleteUserTaskUseCase, DeleteUserTaskUseCase>();
+
+        services.AddScoped<ICreateEventUseCase, CreateEventUseCase>();
+        services.AddScoped<IGetAllEventsUseCase, GetAllEventsUseCase>();
+        services.AddScoped<IGetEventByIdUseCase, GetEventByIdUseCase>();
+        services.AddScoped<IUpdateEventUseCase, UpdateEventUseCase>();
+        services.AddScoped<IPatchEventUseCase, PatchEventUseCase>();
+        services.AddScoped<IDeleteEventUseCase, DeleteEventUseCase>();
     }
 }

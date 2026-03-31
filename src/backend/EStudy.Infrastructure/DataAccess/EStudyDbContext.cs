@@ -11,6 +11,8 @@ public class EStudyDbContext : DbContext
 
     public DbSet<User> Users { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<UserTask> UserTasks { get; set; }
+    public DbSet<Event> Events { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

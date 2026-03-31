@@ -1,6 +1,65 @@
 @EStudy.Api_HostAddress = http://localhost:5016
+@JwtToken = COLOQUE_SEU_TOKEN_AQUI
+@EventoId = COLOQUE_O_ID_SQIDS_AQUI
 
 GET {{EStudy.Api_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+GET {{EStudy.Api_HostAddress}}/api/eventos?start_date=2026-03-30T00:00:00Z&end_date=2026-03-30T23:59:59Z
+Authorization: Bearer {{JwtToken}}
+Accept: application/json
+
+###
+
+GET {{EStudy.Api_HostAddress}}/api/eventos/{{EventoId}}
+Authorization: Bearer {{JwtToken}}
+Accept: application/json
+
+###
+
+POST {{EStudy.Api_HostAddress}}/api/eventos
+Authorization: Bearer {{JwtToken}}
+Content-Type: application/json
+
+{
+  "title": "Reuniao de planejamento",
+  "description": "Alinhar sprint",
+  "type": "reuniao",
+  "startDateTime": "2026-03-30T13:00:00Z",
+  "endDateTime": "2026-03-30T14:00:00Z",
+  "isAllDay": false
+}
+
+###
+
+PUT {{EStudy.Api_HostAddress}}/api/eventos/{{EventoId}}
+Authorization: Bearer {{JwtToken}}
+Content-Type: application/json
+
+{
+  "title": "Meta trimestral",
+  "description": "Revisar entregas",
+  "type": "meta",
+  "startDateTime": "2026-03-31T09:00:00Z",
+  "endDateTime": "2026-03-31T10:00:00Z",
+  "isAllDay": false
+}
+
+###
+
+PATCH {{EStudy.Api_HostAddress}}/api/eventos/{{EventoId}}
+Authorization: Bearer {{JwtToken}}
+Content-Type: application/json
+
+{
+  "startDateTime": "2026-03-31T10:00:00Z",
+  "endDateTime": "2026-03-31T11:00:00Z"
+}
+
+###
+
+DELETE {{EStudy.Api_HostAddress}}/api/eventos/{{EventoId}}
+Authorization: Bearer {{JwtToken}}
+
