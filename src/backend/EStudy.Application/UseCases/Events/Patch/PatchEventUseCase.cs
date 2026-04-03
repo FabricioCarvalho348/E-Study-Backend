@@ -1,4 +1,5 @@
-﻿using EStudy.Communication.Requests.Events;
+﻿using EStudy.Application.Common.ErrorHandling;
+using EStudy.Communication.Requests.Events;
 using EStudy.Domain.Extensions;
 using EStudy.Domain.Repositories;
 using EStudy.Domain.Repositories.Event;
@@ -35,7 +36,12 @@ public class PatchEventUseCase(
         var endDateTime = request.EndDateTime ?? eventEntity.EndDateTime;
 
         if (startDateTime > endDateTime)
-            throw new ErrorOnValidationException(["A data/hora de inicio deve ser menor ou igual a data/hora de termino."]);
+            throw new ErrorOnValidationException(
+            [
+                new AppError(
+                    AppErrorCodes.General.Validation,
+                    "A data/hora de inicio deve ser menor ou igual a data/hora de termino.")
+            ]);
 
         eventEntity.StartDateTime = startDateTime;
         eventEntity.EndDateTime = endDateTime;
@@ -53,11 +59,6 @@ public class PatchEventUseCase(
         var result = await validator.ValidateAsync(request);
 
         if (result.IsValid.IsFalse())
-        {
-            var errorMessages = result.Errors.Select(error => error.ErrorMessage).ToList();
-            throw new ErrorOnValidationException(errorMessages);
-        }
+            throw new ErrorOnValidationException(result.Errors.ToAppErrors());
     }
 }
-
-

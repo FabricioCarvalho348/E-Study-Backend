@@ -4,14 +4,14 @@ namespace EStudy.Exception.ExceptionsBase;
 
 public class ErrorOnValidationException : EStudyException
 {
-    private readonly IList<string> _errorMessages;
-    
-    public ErrorOnValidationException(IList<string> errorMessages) : base(string.Empty)
+    public ErrorOnValidationException(IList<string> errorMessages)
+        : this(errorMessages.Select(message => new AppError(AppErrorCodes.General.Validation, message)).ToList())
     {
-        _errorMessages = errorMessages;
     }
 
-    public override IList<string> GetErrorMessages() => _errorMessages;
+    public ErrorOnValidationException(IList<AppError> errors) : base(errors)
+    {
+    }
 
     public override HttpStatusCode GetStatusCode() => HttpStatusCode.BadRequest;
 }

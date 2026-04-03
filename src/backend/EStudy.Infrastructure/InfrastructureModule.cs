@@ -49,8 +49,11 @@ public static class InfrastructureModule
 
     private static void AddRepositories(IServiceCollection services)
     {
+        services.AddScoped<IUserWriteOnlyRepository, UserRepository>();
+        services.AddScoped<IUserReadOnlyRepository, UserRepository>();
+        services.AddScoped<IUserUpdateOnlyRepository, UserRepository>();
+        services.AddScoped<IUserDeleteOnlyRepository, UserRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITokenRepository, TokenRepository>();
         services.AddScoped<IUserTaskRepository, UserTaskRepository>();
         services.AddScoped<IEventRepository, EventRepository>();

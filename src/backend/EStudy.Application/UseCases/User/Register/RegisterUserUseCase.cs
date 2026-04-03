@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EStudy.Application.Common.ErrorHandling;
 using EStudy.Communication.Requests.Users;
 using EStudy.Communication.Responses.Tokens;
 using EStudy.Communication.Responses.Users;
@@ -14,7 +15,8 @@ using EStudy.Exception.ExceptionsBase;
 namespace EStudy.Application.UseCases.User.Register;
 
 public class RegisterUserUseCase(
-    IUserRepository userRepository,
+    IUserWriteOnlyRepository writeOnlyRepository,
+    IUserReadOnlyRepository readOnlyRepository,
     IUnitOfWork unitOfWork,
     IPasswordEncrypter passwordEncrypter,
     IAccessTokenGenerator accessTokenGenerator,
@@ -30,7 +32,10 @@ public class RegisterUserUseCase(
         var user = mapper.Map<Domain.Entities.User>(request);
         user.Password = passwordEncrypter.Encrypt(request.Password);
 
-        await userRepository.Add(user);
+        if (user.UserIdentifier == Guid.Empty)
+            user.UserIdentifier = Guid.NewGuid();
+
+        await writeOnlyRepository.Add(user);
 
         await unitOfWork.Commit();
 
@@ -68,15 +73,15 @@ public class RegisterUserUseCase(
 
         var result = await validator.ValidateAsync(request);
 
-        var emailExist = await userRepository.ExistActiveUserWithEmail(request.Email);
+        var emailExist = await readOnlyRepository.ExistActiveUserWithEmail(request.Email);
         if (emailExist)
-            result.Errors.Add(new FluentValidation.Results.ValidationFailure(string.Empty, "Já existe um usuário cadastrado com este email."));
+            result.Errors.Add(new FluentValidation.Results.ValidationFailure(string.Empty, "Ja existe um usuario cadastrado com este email")
+            {
+                ErrorCode = AppErrorCodes.General.Validation,
+                PropertyName = "email"
+            });
 
         if (result.IsValid.IsFalse())
-        {
-            var errorMessages = result.Errors.Select(e => e.ErrorMessage).ToList();
-
-            throw new ErrorOnValidationException(errorMessages);
-        }
+            throw new ErrorOnValidationException(result.Errors.ToAppErrors());
     }
 }

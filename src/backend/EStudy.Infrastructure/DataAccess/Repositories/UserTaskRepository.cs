@@ -31,6 +31,4 @@ public class UserTaskRepository(EStudyDbContext dbContext) : IUserTaskRepository
     }
 
     public void Update(UserTask userTask) => dbContext.UserTasks.Update(userTask);
-
-
 }

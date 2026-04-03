@@ -20,14 +20,13 @@ using EStudy.Application.UseCases.UserTasks.GetById;
 using EStudy.Application.UseCases.UserTasks.Update;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Sqids;
 
 namespace EStudy.Application;
 
 public static class ApplicationModule
 {
-        public static void AddApplication(this IServiceCollection services, IConfiguration configuration)
+    public static void AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
         AddAutoMapper(services);
         AddIdEncoder(services, configuration);
@@ -36,14 +35,16 @@ public static class ApplicationModule
 
     private static void AddAutoMapper(IServiceCollection services)
     {
-        services.AddScoped(option => new AutoMapper.MapperConfiguration(autoMapperOptions =>
-        {
-            var sqIds = option.GetService<SqidsEncoder<long>>()!;
-
-            autoMapperOptions.AddProfile(new AutoMapping(sqIds));
-        }, option.GetService<ILoggerFactory>()).CreateMapper());
+        services.AddScoped(option => new AutoMapper.MapperConfiguration(
+            autoMapperOptions =>
+            {
+                var sqids = option.GetService<SqidsEncoder<long>>()!;
+                autoMapperOptions.AddProfile(new AutoMapping(sqids));
+            },
+            option.GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>())
+            .CreateMapper());
     }
-
+    
     private static void AddIdEncoder(IServiceCollection services, IConfiguration configuration)
     {
         var alphabet = configuration.GetValue<string>("Settings:IdCryptographyAlphabet");

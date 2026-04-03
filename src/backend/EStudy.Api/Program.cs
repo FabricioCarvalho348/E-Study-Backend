@@ -45,6 +45,8 @@ app.UseCors(ApiConfiguration.CorsPolicyName);
 
 app.MapControllers();
 
+builder.Services.AddHttpContextAccessor();
+
 if (builder.Configuration.IsTestEnvironment() == false)
 {
     app.ConfigureDevEnvironment();

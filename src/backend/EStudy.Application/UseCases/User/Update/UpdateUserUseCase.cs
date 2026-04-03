@@ -1,4 +1,5 @@
-﻿using EStudy.Communication.Requests.Users;
+﻿using EStudy.Application.Common.ErrorHandling;
+using EStudy.Communication.Requests.Users;
 using EStudy.Domain.Extensions;
 using EStudy.Domain.Repositories;
 using EStudy.Domain.Repositories.User;
@@ -7,35 +8,27 @@ using EStudy.Exception.ExceptionsBase;
 
 namespace EStudy.Application.UseCases.User.Update;
 
-public class UpdateUserUseCase : IUpdateUserUseCase
+public class UpdateUserUseCase(
+    ILoggedUser loggedUser,
+    IUserUpdateOnlyRepository repository,
+    IUserReadOnlyRepository userReadOnlyRepository,
+    IUnitOfWork unitOfWork)
+    : IUpdateUserUseCase
 {
-    private readonly ILoggedUser _loggedUser;
-    private readonly IUserRepository _userRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public UpdateUserUseCase(
-        ILoggedUser loggedUser,
-        IUnitOfWork unitOfWork, IUserRepository userRepository)
-    {
-        _loggedUser = loggedUser;
-        _unitOfWork = unitOfWork;
-        _userRepository = userRepository;
-    }
-
     public async Task Execute(RequestUpdateUserJson request)
     {
-        var loggedUser = await _loggedUser.User();
+        var loggedUser1 = await loggedUser.User();
 
-        await Validate(request, loggedUser.Email);
+        await Validate(request, loggedUser1.Email);
 
-        var user = await _userRepository.GetById(loggedUser.Id);
+        var user = await repository.GetById(loggedUser1.Id);
 
         user.Name = request.Name;
         user.Email = request.Email;
 
-        _userRepository.Update(user);
+        repository.Update(user);
 
-        await _unitOfWork.Commit();
+        await unitOfWork.Commit();
     }
 
     private async Task Validate(RequestUpdateUserJson request, string currentEmail)
@@ -46,16 +39,15 @@ public class UpdateUserUseCase : IUpdateUserUseCase
 
         if (currentEmail.Equals(request.Email).IsFalse())
         {
-            var userExist = await _userRepository.ExistActiveUserWithEmail(request.Email);
+            var userExist = await userReadOnlyRepository.ExistActiveUserWithEmail(request.Email);
             if (userExist)
-                result.Errors.Add(new FluentValidation.Results.ValidationFailure("email", "Já existe um usuário cadastrado com este email."));
+                result.Errors.Add(new FluentValidation.Results.ValidationFailure("email", "Ja existe um usuario com este email")
+                {
+                    ErrorCode = AppErrorCodes.General.Validation
+                });
         }
 
         if (result.IsValid.IsFalse())
-        {
-            var errorMessages = result.Errors.Select(error => error.ErrorMessage).ToList();
-
-            throw new ErrorOnValidationException(errorMessages);
-        }
+            throw new ErrorOnValidationException(result.Errors.ToAppErrors());
     }
 }

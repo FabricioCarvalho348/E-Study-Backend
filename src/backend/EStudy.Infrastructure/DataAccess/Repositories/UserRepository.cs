@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EStudy.Infrastructure.DataAccess.Repositories;
 
-public class UserRepository(EStudyDbContext dbContext) : IUserRepository
+public class UserRepository(EStudyDbContext dbContext) : IUserWriteOnlyRepository, IUserReadOnlyRepository, IUserUpdateOnlyRepository, IUserDeleteOnlyRepository
 {
     public async Task Add(User user) => await dbContext.Users.AddAsync(user);
     

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EStudy.Application.Common.ErrorHandling;
 using EStudy.Communication.Requests.Events;
 using EStudy.Communication.Responses.Events;
 using EStudy.Domain.Extensions;
@@ -37,11 +38,6 @@ public class CreateEventUseCase(
         var result = await validator.ValidateAsync(request);
 
         if (result.IsValid.IsFalse())
-        {
-            var errorMessages = result.Errors.Select(error => error.ErrorMessage).ToList();
-            throw new ErrorOnValidationException(errorMessages);
-        }
+            throw new ErrorOnValidationException(result.Errors.ToAppErrors());
     }
 }
-
-

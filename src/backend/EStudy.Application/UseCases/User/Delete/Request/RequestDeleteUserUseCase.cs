@@ -5,7 +5,7 @@ using EStudy.Domain.Services.LoggedUser;
 namespace EStudy.Application.UseCases.User.Delete.Request;
 
 public class RequestDeleteUserUseCase(
-    IUserRepository userUpdateRepository,
+    IUserUpdateOnlyRepository userUpdateRepository,
     ILoggedUser loggedUser,
     IUnitOfWork unitOfWork)
     : IRequestDeleteUserUseCase

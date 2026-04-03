@@ -1,4 +1,5 @@
-﻿using EStudy.Communication.Requests.UserTasks;
+﻿using EStudy.Application.Common.ErrorHandling;
+using EStudy.Communication.Requests.UserTasks;
 using EStudy.Domain.Extensions;
 using EStudy.Domain.Repositories;
 using EStudy.Domain.Repositories.UserTask;
@@ -37,9 +38,6 @@ public class UpdateUserTaskUseCase(
         var result = await validator.ValidateAsync(request);
 
         if (result.IsValid.IsFalse())
-        {
-            var errorMessages = result.Errors.Select(error => error.ErrorMessage).ToList();
-            throw new ErrorOnValidationException(errorMessages);
-        }
+            throw new ErrorOnValidationException(result.Errors.ToAppErrors());
     }
 }

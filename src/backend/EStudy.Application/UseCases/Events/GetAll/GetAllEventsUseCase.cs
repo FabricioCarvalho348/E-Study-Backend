@@ -14,7 +14,12 @@ public class GetAllEventsUseCase(
     public async Task<List<ResponseEventJson>> Execute(DateTime startDate, DateTime endDate, string? type)
     {
         if (startDate > endDate)
-            throw new ErrorOnValidationException(["A data inicial deve ser menor ou igual a data final."]);
+            throw new ErrorOnValidationException(
+            [
+                new AppError(
+                    AppErrorCodes.General.Validation,
+                    "A data inicial deve ser menor ou igual a data final.")
+            ]);
 
         string? sanitizedType = null;
         if (string.IsNullOrWhiteSpace(type) == false)
@@ -26,5 +31,3 @@ public class GetAllEventsUseCase(
         return mapper.Map<List<ResponseEventJson>>(events);
     }
 }
-
-

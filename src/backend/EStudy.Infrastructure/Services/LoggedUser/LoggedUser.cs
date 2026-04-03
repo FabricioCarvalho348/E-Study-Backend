@@ -1,39 +1,35 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using EStudy.Domain.Entities;
-using EStudy.Domain.Security.Tokens;
 using EStudy.Domain.Services.LoggedUser;
+using EStudy.Exception.ExceptionsBase;
 using EStudy.Infrastructure.DataAccess;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace EStudy.Infrastructure.Services.LoggedUser;
 
-public class LoggedUser : ILoggedUser
+public class LoggedUser(EStudyDbContext dbContext, IHttpContextAccessor httpContextAccessor)
+    : ILoggedUser
 {
-    private readonly EStudyDbContext _dbContext;
-    private readonly ITokenProvider _tokenProvider;
-    
-    public LoggedUser(EStudyDbContext dbContext, ITokenProvider tokenProvider)
-    {
-        _dbContext = dbContext;
-        _tokenProvider = tokenProvider;
-    }
-
     public async Task<User> User()
     {
-        var token = _tokenProvider.ValueToken();
-        
-        var tokenHandler = new JwtSecurityTokenHandler();
+        var userIdentifierClaim = httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Sid)?.Value;
 
-        var jwtSecurityToken = tokenHandler.ReadJwtToken(token);
+        if (string.IsNullOrWhiteSpace(userIdentifierClaim) || Guid.TryParse(userIdentifierClaim, out var userIdentifier) == false)
+            throw new UnauthorizedException(
+                AppErrorCatalog.GetDefaultMessage(AppErrorCodes.General.Unauthorized),
+                AppErrorCodes.General.Unauthorized);
 
-        var identifier = jwtSecurityToken.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
-        
-        var userIdentifier = Guid.Parse(identifier);
-
-        return await _dbContext
+        var user = await dbContext
             .Users
             .AsNoTracking()
-            .FirstAsync(user => user.Active && user.UserIdentifier == userIdentifier);
+            .FirstOrDefaultAsync(entity => entity.Active && entity.UserIdentifier == userIdentifier);
+
+        if (user is null)
+            throw new UnauthorizedException(
+                AppErrorCatalog.GetDefaultMessage(AppErrorCodes.Auth.UserNotFound),
+                AppErrorCodes.Auth.UserNotFound);
+
+        return user;
     }
 }

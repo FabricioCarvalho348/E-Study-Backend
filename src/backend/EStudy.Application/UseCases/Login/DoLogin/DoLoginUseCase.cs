@@ -12,12 +12,13 @@ using EStudy.Exception.ExceptionsBase;
 namespace EStudy.Application.UseCases.Login.DoLogin;
 
 public class DoLoginUseCase(
-    IUserRepository repository,
+    IUserReadOnlyRepository repository,
     IAccessTokenGenerator accessTokenGenerator,
     IPasswordEncrypter passwordEncrypter,
     IRefreshTokenGenerator refreshTokenGenerator,
     ITokenRepository tokenRepository,
-    IUnitOfWork unitOfWork) : IDoLoginUseCase
+    IUnitOfWork unitOfWork)
+    : IDoLoginUseCase
 {
     public async Task<ResponseRegisteredUserJson> Execute(RequestLoginJson request)
     {
@@ -25,7 +26,7 @@ public class DoLoginUseCase(
 
         if (user is null || passwordEncrypter.IsValid(request.Password, user.Password).IsFalse())
             throw new InvalidLoginException();
-
+        
         var refreshToken = await CreateAndSaveRefreshToken(user);
 
         return new ResponseRegisteredUserJson

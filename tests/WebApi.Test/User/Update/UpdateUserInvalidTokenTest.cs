@@ -1,0 +1,43 @@
+﻿using System.Net;
+using CommonTestUtilities.Requests;
+using CommonTestUtilities.Tokens;
+using FluentAssertions;
+
+namespace WebApi.Test.User.Update;
+
+public class UpdateUserInvalidTokenTest(CustomWebApplicationFactory webApplication) : EStudyClassFixture(webApplication)
+{
+    private const string Method = "user/update-profile";
+
+    [Fact]
+    public async Task Error_Token_Invalid()
+    {
+        var request = RequestUpdateUserJsonBuilder.Build();
+
+        var response = await DoPut(Method, request, token: "tokenInvalid");
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Error_Without_Token()
+    {
+        var request = RequestUpdateUserJsonBuilder.Build();
+
+        var response = await DoPut(Method, request, token: string.Empty);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Error_Token_With_User_NotFound()
+    {
+        var request = RequestUpdateUserJsonBuilder.Build();
+
+        var token = JwtTokenGeneratorBuilder.Build().Generate(Guid.NewGuid());
+
+        var response = await DoPut(Method, request, token);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+}

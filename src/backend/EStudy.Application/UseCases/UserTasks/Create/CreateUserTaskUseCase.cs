@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EStudy.Application.Common.ErrorHandling;
 using EStudy.Communication.Requests.UserTasks;
 using EStudy.Communication.Responses.UserTasks;
 using EStudy.Domain.Extensions;
@@ -36,9 +37,6 @@ public class CreateUserTaskUseCase(
         var result = await validator.ValidateAsync(request);
 
         if (result.IsValid.IsFalse())
-        {
-            var errorMessages = result.Errors.Select(error => error.ErrorMessage).ToList();
-            throw new ErrorOnValidationException(errorMessages);
-        }
+            throw new ErrorOnValidationException(result.Errors.ToAppErrors());
     }
 }

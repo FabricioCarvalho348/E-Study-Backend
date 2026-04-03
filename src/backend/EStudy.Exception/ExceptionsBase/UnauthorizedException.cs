@@ -4,11 +4,9 @@ namespace EStudy.Exception.ExceptionsBase;
 
 public class UnauthorizedException : EStudyException
 {
-    public UnauthorizedException(string message) : base(message)
+    public UnauthorizedException(string message, string code = AppErrorCodes.General.Unauthorized) : base(message, code)
     {
     }
-    
-    public override IList<string> GetErrorMessages() => [Message];
-    
+
     public override HttpStatusCode GetStatusCode() => HttpStatusCode.Unauthorized;
 }

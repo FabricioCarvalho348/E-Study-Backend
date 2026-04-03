@@ -4,11 +4,9 @@ namespace EStudy.Exception.ExceptionsBase;
 
 public class RefreshTokenExpiredException : EStudyException
 {
-    public RefreshTokenExpiredException() : base("Refresh token has expired.")
+    public RefreshTokenExpiredException() : base(AppErrorCatalog.GetDefaultMessage(AppErrorCodes.Auth.RefreshTokenExpired), AppErrorCodes.Auth.RefreshTokenExpired)
     {
     }
 
-    public override IList<string> GetErrorMessages() => [Message];
-    
     public override HttpStatusCode GetStatusCode() => HttpStatusCode.Forbidden;
 }

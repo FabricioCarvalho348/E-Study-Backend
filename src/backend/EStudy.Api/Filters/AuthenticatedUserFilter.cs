@@ -9,11 +9,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace EStudy.Api.Filters;
 
-public class AuthenticatedUserFilter(IAccessTokenValidator accessTokenValidator, IUserRepository repository)
+public class AuthenticatedUserFilter(IAccessTokenValidator accessTokenValidator, IUserReadOnlyRepository repository)
     : IAsyncAuthorizationFilter
 {
-    private readonly IUserRepository _repository = repository;
-
     public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
         try
@@ -22,15 +20,25 @@ public class AuthenticatedUserFilter(IAccessTokenValidator accessTokenValidator,
 
             var userIdentifier = accessTokenValidator.ValidateAndGetUserIdentifier(token);
 
-            var exist = await _repository.ExistActiveUserWithIdentifier(userIdentifier);
+            var exist = await repository.ExistActiveUserWithIdentifier(userIdentifier);
             if (exist.IsFalse())
             {
-                throw new UnauthorizedException("User not found");
+                throw new UnauthorizedException(
+                    AppErrorCatalog.GetDefaultMessage(AppErrorCodes.Auth.UserNotFound),
+                    AppErrorCodes.Auth.UserNotFound);
             }
         }
         catch (SecurityTokenExpiredException)
         {
-            context.Result = new UnauthorizedObjectResult(new ResponseErrorJson("TokenIsExpired")
+            var message = ResolveMessage(context, AppErrorCodes.Auth.TokenExpired, "TokenIsExpired");
+            context.Result = new UnauthorizedObjectResult(new ResponseErrorJson(
+            [
+                new ResponseErrorDetailJson
+                {
+                    Code = AppErrorCodes.Auth.TokenExpired,
+                    Message = message
+                }
+            ])
             {
                 TokenIsExpired = true,
             });
@@ -38,11 +46,27 @@ public class AuthenticatedUserFilter(IAccessTokenValidator accessTokenValidator,
         catch (EStudyException eStudyException)
         {
             context.HttpContext.Response.StatusCode = (int)eStudyException.GetStatusCode();
-            context.Result = new ObjectResult(new ResponseErrorJson(eStudyException.GetErrorMessages()));
+
+            var details = eStudyException.GetErrors().Select(error => new ResponseErrorDetailJson
+            {
+                Code = error.Code,
+                Message = ResolveMessage(context, error.Code, error.Message),
+                Field = error.Field
+            }).ToList();
+
+            context.Result = new ObjectResult(new ResponseErrorJson(details));
         }
         catch
         {
-            context.Result = new UnauthorizedObjectResult(new ResponseErrorJson("Unauthorized"));
+            var message = ResolveMessage(context, AppErrorCodes.General.Unauthorized, "Unauthorized");
+            context.Result = new UnauthorizedObjectResult(new ResponseErrorJson(
+            [
+                new ResponseErrorDetailJson
+                {
+                    Code = AppErrorCodes.General.Unauthorized,
+                    Message = message
+                }
+            ]));
         }
     }
 
@@ -51,9 +75,17 @@ public class AuthenticatedUserFilter(IAccessTokenValidator accessTokenValidator,
         var authentication = context.HttpContext.Request.Headers.Authorization.ToString();
         if (string.IsNullOrWhiteSpace(authentication))
         {
-            throw new UnauthorizedException("Authorization header is missing");
+            throw new UnauthorizedException(
+                AppErrorCatalog.GetDefaultMessage(AppErrorCodes.Auth.AuthorizationHeaderMissing),
+                AppErrorCodes.Auth.AuthorizationHeaderMissing);
         }
 
         return authentication["Bearer ".Length..].Trim();
+    }
+
+    private static string ResolveMessage(AuthorizationFilterContext context, string code, string fallback)
+    {
+        var acceptLanguage = context.HttpContext.Request.Headers.AcceptLanguage.ToString();
+        return AppErrorCatalog.Resolve(code, acceptLanguage, fallback);
     }
 }

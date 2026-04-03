@@ -17,9 +17,9 @@
       <PackageReference Include="Dapper" Version="2.1.72" />
       <PackageReference Include="FluentMigrator" Version="8.0.1" />
       <PackageReference Include="FluentMigrator.Runner" Version="8.0.1" />
-      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.4" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.4" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.4">
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.5" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.5" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.5">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
@@ -28,6 +28,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\EStudy.Domain\EStudy.Domain.csproj" />
+        <ProjectReference Include="..\EStudy.Exception\EStudy.Exception.csproj" />
     </ItemGroup>
 
 </Project>
