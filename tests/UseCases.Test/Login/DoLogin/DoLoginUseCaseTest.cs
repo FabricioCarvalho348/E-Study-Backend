@@ -32,24 +32,6 @@ public class DoLoginUseCaseTest
     }
 
     [Fact]
-    public async Task Success_When_UserIdentifier_Is_Empty()
-    {
-        var (user, password) = UserBuilder.Build();
-        user.UserIdentifier = Guid.Empty;
-
-        var useCase = CreateUseCase(user);
-
-        var result = await useCase.Execute(new RequestLoginJson
-        {
-            Email = user.Email,
-            Password = password
-        });
-
-        result.Tokens.AccessToken.Should().NotBeNullOrEmpty();
-        user.UserIdentifier.Should().NotBe(Guid.Empty);
-    }
-
-    [Fact]
     public async Task Error_Invalid_User()
     {
         var request = RequestLoginJsonBuilder.Build();
@@ -66,25 +48,14 @@ public class DoLoginUseCaseTest
     {
         var passwordEncrypter = PasswordEncrypterBuilder.Build();
         var userReadOnlyRepositoryBuilder = new UserReadOnlyRepositoryBuilder();
-        var userUpdateOnlyRepositoryBuilder = new UserUpdateOnlyRepositoryBuilder();
         var accessTokenGenerator = JwtTokenGeneratorBuilder.Build();
         var refreshTokenGenerator = RefreshTokenGeneratorBuilder.Build();
         var unitOfWork = UnitOfWorkBuilder.Build();
         var tokenRepository = new TokenRepositoryBuilder().Build();
 
         if (user is not null)
-        {
             userReadOnlyRepositoryBuilder.GetByEmail(user);
-            userUpdateOnlyRepositoryBuilder.GetById(user);
-        }
 
-        return new DoLoginUseCase(
-            userReadOnlyRepositoryBuilder.Build(),
-            userUpdateOnlyRepositoryBuilder.Build(),
-            accessTokenGenerator,
-            passwordEncrypter,
-            refreshTokenGenerator,
-            tokenRepository,
-            unitOfWork);
+        return new DoLoginUseCase(userReadOnlyRepositoryBuilder.Build(), accessTokenGenerator, passwordEncrypter, refreshTokenGenerator, tokenRepository, unitOfWork);
     }
 }
