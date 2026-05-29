@@ -2,6 +2,7 @@
 using EStudy.Domain.Repositories.Event;
 using EStudy.Domain.Repositories.Token;
 using EStudy.Domain.Repositories.User;
+using EStudy.Domain.Repositories.UserCustomCategory;
 using EStudy.Domain.Security.Cryptography;
 using EStudy.Domain.Security.Tokens;
 using EStudy.Domain.Services.LoggedUser;
@@ -32,7 +33,7 @@ public static class InfrastructureModule
         
         if (configuration.IsTestEnvironment())
             return;
-        
+
         AddDbContext(services, configuration);
         AddFluentMigratorPostgres(services, configuration);
     }
@@ -57,6 +58,7 @@ public static class InfrastructureModule
         services.AddScoped<ITokenRepository, TokenRepository>();
         services.AddScoped<IUserTaskRepository, UserTaskRepository>();
         services.AddScoped<IEventRepository, EventRepository>();
+        services.AddScoped<IUserCustomCategoryRepository, UserCustomCategoryRepository>();
     }
 
     private static void AddFluentMigratorPostgres(IServiceCollection services, IConfiguration configuration)

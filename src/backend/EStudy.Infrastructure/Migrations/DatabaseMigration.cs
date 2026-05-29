@@ -11,5 +11,5 @@ public static class DatabaseMigration
         var dbContext = serviceProvider.GetRequiredService<EStudyDbContext>();
 
         await dbContext.Database.MigrateAsync();
-    } 
+    }
 }

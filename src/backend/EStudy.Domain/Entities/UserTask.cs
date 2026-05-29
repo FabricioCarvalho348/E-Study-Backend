@@ -8,7 +8,10 @@ public class UserTask : BaseEntity
     public string? Description { get; set; }
     public DateTime? DueDate { get; set; }
     public bool IsCompleted { get; set; }
+    public CategoryEnum? Category { get; set; }
     public long UserId { get; set; }
     public User User { get; set; } = default!;
+    public long? CustomCategoryId { get; set; }
+    public UserCustomCategory? CustomCategory { get; set; }
 }
 

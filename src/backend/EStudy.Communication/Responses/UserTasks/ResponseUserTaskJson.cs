@@ -1,4 +1,6 @@
-﻿namespace EStudy.Communication.Responses.UserTasks;
+﻿using EStudy.Domain.Entities;
+
+namespace EStudy.Communication.Responses.UserTasks;
 
 public class ResponseUserTaskJson
 {
@@ -7,6 +9,9 @@ public class ResponseUserTaskJson
     public string? Description { get; set; }
     public DateTime? DueDate { get; set; }
     public bool IsCompleted { get; set; }
+    public CategoryEnum? Category { get; set; }
+    public string? CategoryName { get; set; }
+    public long? CustomCategoryId { get; set; }
     public DateTime CreatedOn { get; set; }
 }
 

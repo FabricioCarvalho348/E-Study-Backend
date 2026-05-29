@@ -18,6 +18,10 @@ using EStudy.Application.UseCases.UserTasks.Delete;
 using EStudy.Application.UseCases.UserTasks.GetAll;
 using EStudy.Application.UseCases.UserTasks.GetById;
 using EStudy.Application.UseCases.UserTasks.Update;
+using EStudy.Application.UseCases.UserCustomCategories.Create;
+using EStudy.Application.UseCases.UserCustomCategories.Delete;
+using EStudy.Application.UseCases.UserCustomCategories.GetAll;
+using EStudy.Application.UseCases.UserCustomCategories.Update;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Sqids;
@@ -82,5 +86,10 @@ public static class ApplicationModule
         services.AddScoped<IUpdateEventUseCase, UpdateEventUseCase>();
         services.AddScoped<IPatchEventUseCase, PatchEventUseCase>();
         services.AddScoped<IDeleteEventUseCase, DeleteEventUseCase>();
+
+        services.AddScoped<ICreateUserCustomCategoryUseCase, CreateUserCustomCategoryUseCase>();
+        services.AddScoped<IGetAllUserCustomCategoriesUseCase, GetAllUserCustomCategoriesUseCase>();
+        services.AddScoped<IUpdateUserCustomCategoryUseCase, UpdateUserCustomCategoryUseCase>();
+        services.AddScoped<IDeleteUserCustomCategoryUseCase, DeleteUserCustomCategoryUseCase>();
     }
 }

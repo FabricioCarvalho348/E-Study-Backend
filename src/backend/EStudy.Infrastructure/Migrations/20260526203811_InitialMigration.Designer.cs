@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EStudy.Infrastructure.Migrations
 {
     [DbContext(typeof(EStudyDbContext))]
-    [Migration("20260330184834_InitialMigration")]
+    [Migration("20260526203811_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -131,7 +131,7 @@ namespace EStudy.Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("EStudy.Domain.Entities.UserTask", b =>
+            modelBuilder.Entity("EStudy.Domain.Entities.UserCustomCategory", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -144,6 +144,40 @@ namespace EStudy.Infrastructure.Migrations
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserCustomCategories");
+                });
+
+            modelBuilder.Entity("EStudy.Domain.Entities.UserTask", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("Category")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("CustomCategoryId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -162,6 +196,8 @@ namespace EStudy.Infrastructure.Migrations
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CustomCategoryId");
 
                     b.HasIndex("UserId");
 
@@ -190,10 +226,10 @@ namespace EStudy.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("EStudy.Domain.Entities.UserTask", b =>
+            modelBuilder.Entity("EStudy.Domain.Entities.UserCustomCategory", b =>
                 {
                     b.HasOne("EStudy.Domain.Entities.User", "User")
-                        .WithMany("UserTasks")
+                        .WithMany("CustomCategories")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -201,10 +237,34 @@ namespace EStudy.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("EStudy.Domain.Entities.UserTask", b =>
+                {
+                    b.HasOne("EStudy.Domain.Entities.UserCustomCategory", "CustomCategory")
+                        .WithMany("UserTasks")
+                        .HasForeignKey("CustomCategoryId");
+
+                    b.HasOne("EStudy.Domain.Entities.User", "User")
+                        .WithMany("UserTasks")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CustomCategory");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("EStudy.Domain.Entities.User", b =>
                 {
+                    b.Navigation("CustomCategories");
+
                     b.Navigation("Events");
 
+                    b.Navigation("UserTasks");
+                });
+
+            modelBuilder.Entity("EStudy.Domain.Entities.UserCustomCategory", b =>
+                {
                     b.Navigation("UserTasks");
                 });
 #pragma warning restore 612, 618

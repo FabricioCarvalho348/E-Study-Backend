@@ -69,18 +69,13 @@ public static class BuilderExtension
 
     public static void AddCrossOrigin(this WebApplicationBuilder builder)
     {
-        builder.Services.AddCors(
-            options => options.AddPolicy(
-                ApiConfiguration.CorsPolicyName,
-                policy => policy
-                    .WithOrigins([
-                        Configuration.BackendUrl,
-                        Configuration.FrontendUrl
-                    ])
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials()
-            ));
+        builder.Services.AddCors(options => options.AddPolicy(
+            ApiConfiguration.CorsPolicyName,
+            policy => policy
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+        ));
     }
 }
 

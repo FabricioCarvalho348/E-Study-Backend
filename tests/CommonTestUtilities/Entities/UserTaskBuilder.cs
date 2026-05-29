@@ -9,7 +9,10 @@ public class UserTaskBuilder
         string? description = "Default Task Description",
         DateTime? dueDate = null,
         bool isCompleted = false,
-        long userId = 1)
+        long userId = 1,
+        CategoryEnum? category = null,
+        long? customCategoryId = null,
+        UserCustomCategory? customCategory = null)
     {
         return new UserTask
         {
@@ -17,7 +20,10 @@ public class UserTaskBuilder
             Description = description,
             DueDate = dueDate,
             IsCompleted = isCompleted,
-            UserId = userId
+            UserId = userId,
+            Category = category,
+            CustomCategoryId = customCategoryId,
+            CustomCategory = customCategory
         };
     }
 }

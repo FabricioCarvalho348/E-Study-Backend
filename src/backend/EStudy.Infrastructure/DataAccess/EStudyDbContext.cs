@@ -13,6 +13,7 @@ public class EStudyDbContext : DbContext
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<UserTask> UserTasks { get; set; }
     public DbSet<Event> Events { get; set; }
+    public DbSet<UserCustomCategory> UserCustomCategories { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

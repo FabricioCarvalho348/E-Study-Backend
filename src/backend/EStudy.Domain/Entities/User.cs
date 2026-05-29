@@ -9,5 +9,6 @@ public class User : BaseEntity
     public string Password { get; set; } = string.Empty;
     public IList<UserTask> UserTasks { get; set; } = new List<UserTask>();
     public IList<Event> Events { get; set; } = new List<Event>();
+    public IList<UserCustomCategory> CustomCategories { get; set; } = new List<UserCustomCategory>();
     public Guid UserIdentifier { get; set; } = Guid.NewGuid();
 }

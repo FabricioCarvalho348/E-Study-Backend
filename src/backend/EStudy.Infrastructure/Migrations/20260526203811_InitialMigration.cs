@@ -80,6 +80,28 @@ namespace EStudy.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserCustomCategories",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    Active = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserCustomCategories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserCustomCategories_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserTasks",
                 columns: table => new
                 {
@@ -89,13 +111,20 @@ namespace EStudy.Infrastructure.Migrations
                     Description = table.Column<string>(type: "text", nullable: true),
                     DueDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     IsCompleted = table.Column<bool>(type: "boolean", nullable: false),
+                    Category = table.Column<int>(type: "integer", nullable: true),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
+                    CustomCategoryId = table.Column<long>(type: "bigint", nullable: true),
                     Active = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserTasks", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserTasks_UserCustomCategories_CustomCategoryId",
+                        column: x => x.CustomCategoryId,
+                        principalTable: "UserCustomCategories",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserTasks_Users_UserId",
                         column: x => x.UserId,
@@ -115,6 +144,16 @@ namespace EStudy.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserCustomCategories_UserId",
+                table: "UserCustomCategories",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserTasks_CustomCategoryId",
+                table: "UserTasks",
+                column: "CustomCategoryId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserTasks_UserId",
                 table: "UserTasks",
                 column: "UserId");
@@ -131,6 +170,9 @@ namespace EStudy.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserTasks");
+
+            migrationBuilder.DropTable(
+                name: "UserCustomCategories");
 
             migrationBuilder.DropTable(
                 name: "Users");

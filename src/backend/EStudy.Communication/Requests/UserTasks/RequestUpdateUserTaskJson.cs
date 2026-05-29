@@ -1,4 +1,6 @@
-﻿namespace EStudy.Communication.Requests.UserTasks;
+﻿using EStudy.Domain.Entities;
+
+namespace EStudy.Communication.Requests.UserTasks;
 
 public class RequestUpdateUserTaskJson
 {
@@ -6,5 +8,7 @@ public class RequestUpdateUserTaskJson
     public string? Description { get; set; }
     public DateTime? DueDate { get; set; }
     public bool IsCompleted { get; set; }
+    public CategoryEnum? Category { get; set; }
+    public long? CustomCategoryId { get; set; }
 }
 
